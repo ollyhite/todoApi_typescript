@@ -21,6 +21,7 @@ export class TasksController {
 
       // Convert the tasks instance to an array of objects
       allTasks = instanceToPlain(allTasks) as Task[];
+      return allTasks;
     } catch (errors) {
       console.log(errors);
     }

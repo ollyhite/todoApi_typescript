@@ -1,10 +1,12 @@
 // const express = require("express");
 //typescript import express
-import express, { Express, Request, Response } from "express";
+import express, { Express } from "express";
 import dotenv from "dotenv";
 import { DataSource } from "typeorm";
 import cors from "cors";
 import bodyParser from "body-parser";
+import { Task } from "./src/tasks/tasks.entity";
+import { tasksRouter } from "./src/tasks/tasks.router";
 
 //instantiate express app
 // const app = express();
@@ -25,6 +27,7 @@ export const AppDataSource = new DataSource({
   username: process.env.MYSQL_USER,
   password: process.env.MYSQL_PASSWORD,
   database: process.env.MYSQL_DB,
+  entities: [Task],
   synchronize: true,
 });
 
@@ -36,10 +39,10 @@ const port = process.env.PORT;
 //   res.send("Express typescript server ");
 // });
 
-app.get("/", (req: Request, res: Response) => {
-  console.log("server get data");
-  res.send("Express typescript server ");
-});
+// app.get("/", (req: Request, res: Response) => {
+//   console.log("server get data");
+//   res.send("Express typescript server ");
+// });
 
 AppDataSource.initialize()
   .then(() => {
@@ -48,3 +51,5 @@ AppDataSource.initialize()
     console.log("Data source has been initialize");
   })
   .catch((err) => console.log("err during data source initialize", err));
+
+app.use("/", tasksRouter);

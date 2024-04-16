@@ -1,17 +1,23 @@
 import { Request, Response, Router } from "express";
-import { TasksController } from "./tasks.controller";
+import { tasksController } from "./tasks.controller";
 import { createValidator } from "./tasks.validator";
 import { validationResult } from "express-validator";
 
 //fire the router func
 export const tasksRouter: Router = Router();
 
-tasksRouter.get("/tasks", async (req: Request, res: Response) => {
-  const tasksController = new TasksController();
-  const allTasks = await tasksController.getAll();
-  // res.send("Express typescript server ");
-  res.json(allTasks).status(200);
-});
+// tasksRouter.get("/tasks", (req: Request, res: Response) => {
+//   const allTasks = await tasksController.getAll();
+//   // res.send("Express typescript server ");
+//   res.json(allTasks).status(200);
+// });
+
+// tasksRouter.get("/tasks", (req: Request, res: Response) => {
+//   return tasksController.getAll();
+// });
+
+tasksRouter.get("/tasks", tasksController.getAll);
+
 
 tasksRouter.post(
   "/tasks",

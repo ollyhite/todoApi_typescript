@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { tasksController } from "./tasks.controller";
 import { createValidator } from "./tasks.validator";
+import { updateValidator } from "./tasks.validator";
 // import { validationResult } from "express-validator";
 
 //fire the router func
@@ -30,3 +31,5 @@ tasksRouter.get("/tasks", tasksController.getAll);
 //   }
 // );
 tasksRouter.post("/tasks", createValidator, tasksController.create);
+
+tasksRouter.put("/tasks", updateValidator, tasksController.update);

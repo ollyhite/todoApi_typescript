@@ -1,8 +1,9 @@
-import { validationResult } from "express-validator";
 import { AppDataSource } from "../../index";
 import { Task } from "./tasks.entity";
-import { instanceToPlain } from "class-transformer";
+import { instanceToPlain, plainToInstance } from "class-transformer";
 import { Request, Response } from "express";
+import { UpdateResult } from "typeorm";
+import { validationResult } from "express-validator";
 
 class TasksController {
   //   constructor(private taskRepository = AppDataSource.getRepository(Task)) {}
@@ -57,6 +58,43 @@ class TasksController {
       createTask = instanceToPlain(createTask) as Task;
       return res.json(createTask).status(201);
     } catch (errors) {
+      return res.json({ error: "Internal Server Error" }).status(500);
+    }
+  }
+  // method for updating tasks
+  public async update(req: Request, res: Response): Promise<Response> {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    //try to find if the tasks exists
+    let task: Task | null;
+    try {
+      task = await AppDataSource.getRepository(Task).findOne({
+        where: { id: req.body.id },
+      });
+    } catch (error) {
+      return res.json({ error: "Internal Server Error" }).status(500);
+    }
+    //return 400 if tasks is null
+    if (!task) {
+      return res
+        .status(404)
+        .json({ error: "The task with given ID does not exist" });
+    }
+    //declare a variable for updatedTask
+    let updateTask: UpdateResult;
+    //Update the task
+    try {
+      updateTask = await AppDataSource.getRepository(Task).update(
+        req.body.id,
+        plainToInstance(Task, { status: req.body.status })
+      );
+      //Convert the updatedTask instance to an object
+      updateTask = instanceToPlain(updateTask) as UpdateResult;
+      return res.json(updateTask).status(200);
+    } catch (error) {
       return res.json({ error: "Internal Server Error" }).status(500);
     }
   }
